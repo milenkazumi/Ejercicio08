@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora de Préstamo (Interés Simple)</title>
+<link rel="stylesheet" href="/css/Estilo04.css">
+ 
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de Préstamo</h1>
+    <form id="loanForm" novalidate>
+      <label for="monto">Monto del préstamo</label>
+      <input type="number" id="monto" name="monto" min="0.01" step="0.01" placeholder="Ejemplo: 10000" required />
+      <div class="error" id="montoError"></div>
+
+      <label for="tasa">Tasa de interés anual (%)</label>
+      <input type="number" id="tasa" name="tasa" min="0.01" step="0.01" placeholder="Ejemplo: 5" required />
+      <div class="error" id="tasaError"></div>
+
+      <label for="plazo">Plazo en años</label>
+      <input type="number" id="plazo" name="plazo" min="1" step="1" placeholder="Ejemplo: 3" required />
+      <div class="error" id="plazoError"></div>
+
+      <button type="submit">Calcular</button>
+    </form>
+    <div class="results" id="results" aria-live="polite"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loanForm');
+    const montoInput = document.getElementById('monto');
+    const tasaInput = document.getElementById('tasa');
+    const plazoInput = document.getElementById('plazo');
+    const resultsDiv = document.getElementById('results');
+
+    const montoError = document.getElementById('montoError');
+    const tasaError = document.getElementById('tasaError');
+    const plazoError = document.getElementById('plazoError');
+
+    function validatePositiveNumber(value) {
+      return !isNaN(value) && Number(value) > 0;
+    }
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      // Clear errors and results
+      montoError.textContent = '';
+      tasaError.textContent = '';
+      plazoError.textContent = '';
+      resultsDiv.textContent = '';
+
+      const monto = parseFloat(montoInput.value);
+      const tasa = parseFloat(tasaInput.value);
+      const plazo = parseInt(plazoInput.value, 10);
+
+      let valid = true;
+
+      if (!validatePositiveNumber(monto)) {
+        montoError.textContent = 'Por favor ingrese un monto válido y positivo.';
+        valid = false;
+      }
+      if (!validatePositiveNumber(tasa)) {
+        tasaError.textContent = 'Por favor ingrese una tasa de interés positiva.';
+        valid = false;
+      }
+      if (!validatePositiveNumber(plazo) || !Number.isInteger(plazo)) {
+        plazoError.textContent = 'Por favor ingrese un plazo en años válido y positivo.';
+        valid = false;
+      }
+
+      if (!valid) {
+        resultsDiv.textContent = '';
+        return;
+      }
+
+      // Calculate interest and total payment
+      const interes = (monto * tasa * plazo) / 100;
+      const total = monto + interes;
+
+      // Format results as currency in Spanish locale
+      const formatter = new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2,
+      });
+
+      resultsDiv.innerHTML = 
+        `<p>Interés a pagar: <strong>${formatter.format(interes)}</strong></p>` +
+        `<p>Monto total a pagar: <strong>${formatter.format(total)}</strong></p>`;
+    });
+  </script>
+</body>
+</html>
+
