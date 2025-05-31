@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora de Préstamo</title>
+    <link rel="stylesheet" href="">
+    
+   
+</head>
+<body>
+    <h1>Calculadora de Préstamo</h1>
+    <div class="container">
+        <form id="loanForm" novalidate>
+            <label for="monto">Monto del préstamo:</label>
+            <input type="number" id="monto" name="monto" min="0" required />
+
+            <label for="tasa">Tasa de interés anual (%):</label>
+            <input type="number" id="tasa" name="tasa" min="0" required />
+
+            <label for="plazo">Plazo (años):</label>
+            <input type="number" id="plazo" name="plazo" min="0" required />
+
+            <button type="submit">Calcular Interés y Monto Total</button>
+        </form>
+        <div class="result" id="resultado"></div>
+    </div>
+
+    <script>
+        (function(){
+            const form = document.getElementById('loanForm');
+            const montoInput = document.getElementById('monto');
+            const tasaInput = document.getElementById('tasa');
+            const plazoInput = document.getElementById('plazo');
+            const resultadoDiv = document.getElementById('resultado');
+
+            form.addEventListener('submit', function(event){
+                event.preventDefault();
+
+                // Reset result
+                resultadoDiv.textContent = "";
+
+                const monto = parseFloat(montoInput.value);
+                const tasa = parseFloat(tasaInput.value);
+                const plazo = parseFloat(plazoInput.value);
+
+                // Validate inputs
+                if (monto <= 0 || tasa <= 0 || plazo <= 0) {
+                    resultadoDiv.textContent = "Todos los campos deben ser números positivos.";
+                    return;
+                }
+
+                // Calculate interest and total amount
+                const interes = (monto * tasa * plazo) / 100;
+                const total = monto + interes;
+
+                resultadoDiv.textContent = `Interés: $${interes.toFixed(2)}, Monto Total: $${total.toFixed(2)}`;
+            });
+
+        })();
+    </script>
+</body>
+</html>

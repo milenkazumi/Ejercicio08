@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora de IMC</title>
+  <link rel="stylesheet" href="/css/Estilo03.css">
+</head>
+<body>
+  <h1>Calculadora de IMC</h1>
+  <div class="container">
+    <form id="imcForm" novalidate>
+      <label for="nombre">Nombre y Apellidos:</label>
+      <input type="text" id="nombre" name="nombre" placeholder="Ingrese su nombre completo" required />
+      <div id="nombreError" class="error"></div>
+
+      <label for="peso">Peso (kg):</label>
+      <input type="number" id="peso" name="peso" min="0" step="0.1" placeholder="Ejemplo: 68.5" required />
+      <div id="pesoError" class="error"></div>
+
+      <label for="altura">Altura (m):</label>
+      <input type="number" id="altura" name="altura" min="0" step="0.01" placeholder="Ejemplo: 1.75" required />
+      <div id="alturaError" class="error"></div>
+
+      <button type="submit">Calcular IMC</button>
+    </form>
+    <div class="result" id="resultado"></div>
+  </div>
+
+  <script>
+  (function(){
+    const form = document.getElementById('imcForm');
+    const nombreInput = document.getElementById('nombre');
+    const pesoInput = document.getElementById('peso');
+    const alturaInput = document.getElementById('altura');
+    const resultadoDiv = document.getElementById('resultado');
+
+    const nombreError = document.getElementById('nombreError');
+    const pesoError = document.getElementById('pesoError');
+    const alturaError = document.getElementById('alturaError');
+
+    function validarNombre(value) {
+      // At least 3 characters, letters and spaces
+      return /^[a-zA-ZÀ-ÿ\s]{3,}$/.test(value.trim());
+    }
+    function validarPeso(value) {
+      const num = parseFloat(value);
+      return !isNaN(num) && num > 0;
+    }
+    function validarAltura(value) {
+      const num = parseFloat(value);
+      return !isNaN(num) && num > 0;
+    }
+
+    function clasificarIMC(imc) {
+      if (imc < 18.5) return "Bajo peso";
+      if (imc < 25) return "Normal";
+      if (imc < 30) return "Sobrepeso";
+      return "Obesidad";
+    }
+
+    form.addEventListener('submit', function(event){
+      event.preventDefault();
+
+      // Reset errors
+      nombreError.textContent = "";
+      pesoError.textContent = "";
+      alturaError.textContent = "";
+      resultadoDiv.textContent = "";
+
+      let valid = true;
+
+      if (!validarNombre(nombreInput.value)) {
+        nombreError.textContent = "Ingrese un nombre válido (solo letras y espacios, mínimo 3 caracteres).";
+        valid = false;
+      }
+      if (!validarPeso(pesoInput.value)) {
+        pesoError.textContent = "Ingrese un peso válido mayor a 0.";
+        valid = false;
+      }
+      if (!validarAltura(alturaInput.value)) {
+        alturaError.textContent = "Ingrese una altura válida mayor a 0.";
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      const peso = parseFloat(pesoInput.value);
+      const altura = parseFloat(alturaInput.value);
+
+      const imc = peso / (altura * altura);
+      const clasificacion = clasificarIMC(imc);
+
+      resultadoDiv.textContent = `IMC: ${imc.toFixed(2)} - Clasificación: ${clasificacion}`;
+    });
+  })();
+  </script>
+</body>
+</html>
+

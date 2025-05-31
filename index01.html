@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora de Sueldo Neto</title>
+    <link rel="stylesheet" href="/css/Estilo01.css">
+    
+</head>
+<body>
+    <h1>Calculadora de Sueldo Neto</h1>
+    <div class="container">
+        <form id="salaryForm" novalidate>
+            <label for="dni">DNI:</label>
+            <input type="text" id="dni" name="dni" maxlength="8" placeholder="Ingrese DNI (solo números)" required />
+            <div id="dniError" class="error"></div>
+
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ingrese nombre completo" required />
+            <div id="nombreError" class="error"></div>
+
+            <label for="cargo">Cargo:</label>
+            <select id="cargo" name="cargo" required>
+                <option value="">-- Seleccione el cargo --</option>
+                <option value="administrativo">Administrativo</option>
+                <option value="operativo">Operativo</option>
+                <option value="gerente">Gerente</option>
+                <option value="director">Director</option>
+            </select>
+            <div id="cargoError" class="error"></div>
+
+            <label for="descuento">Porcentaje de descuento (%):</label>
+            <input type="number" id="descuento" name="descuento" min="0" max="100" step="0.1" placeholder="Ejemplo: 13.5" required />
+            <div id="descuentoError" class="error"></div>
+
+            <label>Sueldo Bruto:</label>
+            <div id="sueldoBruto" style="font-weight: 700; margin-bottom: 1.2rem;">-</div>
+
+            <button type="submit">Calcular sueldo neto</button>
+        </form>
+        <div class="result" id="resultado"></div>
+    </div>
+
+    <script>
+        (function(){
+            const form = document.getElementById('salaryForm');
+            const dniInput = document.getElementById('dni');
+            const nombreInput = document.getElementById('nombre');
+            const cargoSelect = document.getElementById('cargo');
+            const descuentoInput = document.getElementById('descuento');
+            const sueldoBrutoDiv = document.getElementById('sueldoBruto');
+            const resultadoDiv = document.getElementById('resultado');
+
+            const dniError = document.getElementById('dniError');
+            const nombreError = document.getElementById('nombreError');
+            const cargoError = document.getElementById('cargoError');
+            const descuentoError = document.getElementById('descuentoError');
+
+            // Define gross salary by cargo
+            const sueldosBrutos = {
+                administrativo: 2500,
+                operativo: 1800,
+                gerente: 4000,
+                director: 6000
+            };
+
+            function validarDNI(value) {
+                return /^\d{7,8}$/.test(value);
+            }
+            function validarNombre(value) {
+                // Accept letters and spaces (including accented characters)
+                return /^[a-zA-ZÀ-ÿ\s]{3,}$/.test(value.trim());
+            }
+            function validarDescuento(value) {
+                const num = parseFloat(value);
+                return !isNaN(num) && num >= 0 && num <= 100;
+            }
+
+            function mostrarSueldoBruto(cargo) {
+                if (cargo && sueldosBrutos[cargo] !== undefined) {
+                    sueldoBrutoDiv.textContent = "$ " + sueldosBrutos[cargo].toFixed(2);
+                } else {
+                    sueldoBrutoDiv.textContent = '-';
+                }
+            }
+
+            cargoSelect.addEventListener('change', function() {
+                mostrarSueldoBruto(this.value);
+                resultadoDiv.textContent = "";
+            });
+
+            form.addEventListener('submit', function(event){
+                event.preventDefault();
+
+                // Reset errors
+                dniError.textContent = "";
+                nombreError.textContent = "";
+                cargoError.textContent = "";
+                descuentoError.textContent = "";
+                resultadoDiv.textContent = "";
+
+                let valid = true;
+
+                if (!validarDNI(dniInput.value)) {
+                    dniError.textContent = "Debe ingresar un DNI válido (7 u 8 dígitos numéricos).";
+                    valid = false;
+                }
+                if (!validarNombre(nombreInput.value)) {
+                    nombreError.textContent = "El nombre debe tener al menos 3 letras y solo caracteres alfabéticos.";
+                    valid = false;
+                }
+                if (!cargoSelect.value) {
+                    cargoError.textContent = "Debe seleccionar un cargo.";
+                    valid = false;
+                }
+                if (!validarDescuento(descuentoInput.value)) {
+                    descuentoError.textContent = "Ingrese un porcentaje válido entre 0 y 100.";
+                    valid = false;
+                }
+
+                if (!valid) return;
+
+                const bruto = sueldosBrutos[cargoSelect.value];
+                const descuento = parseFloat(descuentoInput.value);
+
+                const neto = bruto - (bruto * descuento / 100);
+
+                resultadoDiv.textContent = `Sueldo Neto de ${nombreInput.value.trim()} (DNI: ${dniInput.value}) es: $${neto.toFixed(2)}`;
+            });
+
+        })();
+    </script>
+</body>
+</html>
+
